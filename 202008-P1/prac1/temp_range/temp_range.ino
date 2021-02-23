@@ -99,15 +99,97 @@
 // objeto para manejar el driver. Inicialización de los pines.
 LiquidCrystal lcd(9, 8, 7, 6, 5, 4);
 
-
+// global variables
+float measures[20];
+int cnt = 0;
+int flag_up = 0;
+int flag_down = 0;
+int low_range, high_range;
+  
 void setup() {
   
-  // Código de configuración. Solo se ejecutará al comienzo de la aplicación.
-  
+  Serial.begin(9600);
+  lcd.begin(16, 2);
+  pinMode(2, INPUT_PULLUP);
+  pinMode(3, INPUT_PULLUP);
+  pinMode(12, OUTPUT);
+  pinMode(13, OUTPUT);
+  attachInterrupt(digitalPinToInterrupt(3), pls_up, RISING);
+  attachInterrupt(digitalPinToInterrupt(2), pls_down, RISING);
+  for(int i=0; i<20; i++){
+    float volt = analogRead(0)*5.0/1024.0-0.5;
+    int temp = volt/0.01;
+    measures[i] = temp;
+    }
+  low_range = measures[19] - 5;
+  high_range = measures[19] + 5;
 }
 
 void loop() {
+
+  // Check range flags 
+  if (flag_up == 1){
+    low_range += 1;
+    high_range += 1;
+    flag_up = 0;
+    }
+
+   if (flag_down == 1){
+    low_range -= 1;
+    high_range -= 1;
+    flag_down = 0;
+    }
+
+  // Get new measure
+  float volt = analogRead(0)*5.0/1024.0-0.5;
+  int temp_i = volt/0.01;
+
+  // Update cnt
+  cnt %= 20;
+  measures[cnt] = temp_i;
+  cnt += 1;
+
+  // Calculate measure average
+  int sum = 0;
+  for (int i=0; i<20; i++){
+    sum += measures[i];
+    }
+  int avg_temp = sum/20;
+
+  // Light leds if out of range
+  if (avg_temp < low_range){
+    digitalWrite(12, HIGH);
+    digitalWrite(13, LOW);
+    }
+  else if (avg_temp > high_range){
+    digitalWrite(13, HIGH);
+    digitalWrite(12, LOW);
+    }
+  else{
+    digitalWrite(12, LOW);
+    digitalWrite(13, LOW);
+    }
+
+  // Update display 
+  lcd.setCursor(0, 0);
+  lcd.print("Degrees C:");
+  lcd.print(avg_temp);
   
-  // Código principal de la aplicación. Se ejecutará de forma indefinida.
+  lcd.setCursor(0, 1);
+  lcd.print("Range:");
+  lcd.print(low_range);
+  lcd.print(" ; ");
+  lcd.print(high_range);
+  lcd.print(" ");
+ 
+  delay(250);
   
 }
+
+void pls_up(){
+  flag_up = 1;
+  }
+
+void pls_down(){
+  flag_down = 1;
+  }
