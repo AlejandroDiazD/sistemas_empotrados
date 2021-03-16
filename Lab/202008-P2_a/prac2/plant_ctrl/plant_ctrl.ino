@@ -134,7 +134,7 @@ int flag_up = 0;          // Flag auxiliar para interrupcion
 int flag_down = 0;        // Glaf auxiliar para interrupcion
 int low_range, high_range;// Rangos maximo y minimo de temperatura
 int angle = 0;            // Angulo del servo
-int dc_power = 255/3;     // Valor de trabajo del motor DC
+int estado = 0;           // Estado para ir moviendo 90 grados el servo
 bool timer_flag = false;  // Flag que permite realizar unas tareas cada
                           // 500 ms y otras cada 1000 ms
 bool led_flag = false;    // Flag auxiliar para hacer parpadear el LED BUILTIN
@@ -216,7 +216,22 @@ void loop() {
     else if (mode == HEATING){
       digitalWrite(12, HIGH);      // Encender LED rojo
       analogWrite(11, 0);         // Apagar motor DC
-      angle = (angle + 90) % 180; // Mover 90 grados el servo 
+      if (estado == 0){            // Mover 90 grados el servo 
+          angle = 90;
+          estado = 1;
+        }
+      else if (estado == 1){
+          angle = 180;
+          estado = 2;
+        }
+      else if(estado == 2){
+          angle = 90;
+          estado = 3;
+        } 
+      else if (estado == 3){
+          angle = 0;
+          estado = 0;
+        }
       servo.write(angle);
       }
     else if (mode == COOLING){
