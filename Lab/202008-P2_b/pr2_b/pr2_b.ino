@@ -1,18 +1,18 @@
 /* DUDAS 
  * 
- * 1. Las variables que antes utilizabamos como globales, seguimos utilizando globales??
- * o hay que tenerlo en cuenta de alguna forma de cara al tamano de la pila que se reserva
- * para cada tarea??
+ * @Todo : Falta hacer lo del watchdog con una cola
+ * Primero se crea la cola 
+ * Luego hay un Send que envia a la cola (encola, que no 
+ * implica que se haya recibido)
+ * Y hay otro Receive que lee de la cola (el watchdog)
  * 
- * 2. Los pinMode se realizan en cada tarea o en el setup global?
- * 
- * 3. Cuantas tareas y para que cada una tenemos que hacer?
- * 
- * 4. Revisar si hacemos con delay o delayuntil
  * 
  * 5. Ver por que se sube la temperatura del sensor
 */
 #include <Arduino_FreeRTOS.h>
+#include <semphr.h>
+#include <task.h>
+#include <queue.h>
 #include <Servo.h>
 
 
@@ -52,6 +52,9 @@ bool timer_flag = false;  // Flag que permite realizar unas tareas cada
                           // 500 ms y otras cada 1000 ms
 bool led_flag = false;    // Flag auxiliar para hacer parpadear el LED BUILTIN
 int avg_temp = 0;         // Temperatura media de las 20 ultimas medidas
+
+// Declaramos semaforo
+SemaphoreHandle_t mutex;
 
 void setup() {
   
@@ -110,6 +113,12 @@ void setup() {
     ,  NULL
     ,  2  // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
     ,  NULL );
+
+  // Creamos mutex
+  mutex = xSemaphoreCreateMutex();
+  if (mutex != NULL) {
+    Serial.println("Mutex created");
+  }  
   
 }
 
@@ -124,11 +133,15 @@ void TaskBlinkWatchdog(void *pvParameters)  // This is a task.
   Blink
   Turns on an LED on for one second, then off for one second, repeatedly.
 */
+  TickType_t xLastWakeTime;
+  xLastWakeTime = xTaskGetTickCount();
+
   for (;;) // A Task shall never return or exit.
-  {
+  { 
     cnt_watchdog += 1;
     if (cnt_watchdog >= 2){
-      vTaskDelay( 1000 / portTICK_PERIOD_MS ); // wait for one second
+      led_flag = true;
+      digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on
     }
     else{
       if (led_flag == false){
@@ -140,6 +153,7 @@ void TaskBlinkWatchdog(void *pvParameters)  // This is a task.
         digitalWrite(LED_BUILTIN, LOW);    // turn the LED off 
       }
     }
+    vTaskDelayUntil(&xLastWakeTime, 1000 / portTICK_PERIOD_MS ); // wait for one second
   }
 }
 
@@ -149,15 +163,19 @@ void TaskTempRead(void *pvParameters)
   /*
     Leer temperatura cada 500 ms
   */
+
+  TickType_t xLastWakeTime;
+  xLastWakeTime = xTaskGetTickCount();
+  
   for (;;)
   {
     // Manda senal al watchdog
     cnt_watchdog = 0;
-    // - Leer sensor
+    // Leer sensor
     float volt = analogRead(0)*5.0/1024.0-0.5;
     int temp_i = volt/0.01;
   
-    // - Actualizar contador y guardar medida
+    // Actualizar contador y guardar medida
     cnt = cnt%20;                // Esto permite que el contador nunca pase de 20
     measures[cnt] = temp_i;   // Almacena la nueva medida
     cnt += 1;                 // Actualiza el contador
@@ -167,8 +185,17 @@ void TaskTempRead(void *pvParameters)
     for (int i=0; i<20; i++){
       sum += measures[i];
     }
+
+    // Captura el semaforo 
+    xSemaphoreTake(mutex, portMAX_DELAY);
+    // Actualiza la media de temperatura
     avg_temp = sum/20;
-    vTaskDelay( 500 / portTICK_PERIOD_MS ); // Espera 500 ms
+    // Libera el semaforo
+    xSemaphoreGive(mutex);
+
+    // Espera 500 ms
+    vTaskDelayUntil(&xLastWakeTime, 500 / portTICK_PERIOD_MS );
+
   }
 }
 
@@ -178,6 +205,10 @@ void TaskRunMode(void *pvParameters)
   /* 
     Ejecuta toda la logica para que funcione la planta cada 1000 ms
   */
+
+  TickType_t xLastWakeTime;
+  xLastWakeTime = xTaskGetTickCount();
+  
   for (;;)
   {
     // Manda senal al watchdog
@@ -234,6 +265,10 @@ void TaskRunMode(void *pvParameters)
     // - Cambiar modo
     // Cambia de modo comprobando las condiciones de funcionamiento
     // definidas segun la temperatura y los rangos.
+    
+    // Captura el semaforo 
+    xSemaphoreTake(mutex, portMAX_DELAY);
+    
     if (avg_temp < low_range){
       mode = HEATING;
     }
@@ -243,6 +278,9 @@ void TaskRunMode(void *pvParameters)
     else{
       mode = STANDBY;
     }
+
+    // Libera el semaforo
+    xSemaphoreGive(mutex);
 
     // Imprimir toda la informacion 
     Serial.print(millis());
@@ -259,7 +297,8 @@ void TaskRunMode(void *pvParameters)
     Serial.print(" , Mode = ");
     Serial.println(mode);
 
-    vTaskDelay( 1000 / portTICK_PERIOD_MS ); // Espera 1000 ms
+    // Espera 500 ms
+    vTaskDelayUntil(&xLastWakeTime, 500 / portTICK_PERIOD_MS );
   }
 
 }
