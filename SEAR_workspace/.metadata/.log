@@ -1,0 +1,36 @@
+!SESSION 2021-03-09 17:56:36.437 -----------------------------------------------
+eclipse.buildId=4.14.0.I20191210-0610
+java.version=11.0.10
+java.vendor=Ubuntu
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=es_ES
+Framework arguments:  -product org.eclipse.epp.package.java.product
+Command-line arguments:  -os linux -ws gtk -arch x86_64 -product org.eclipse.epp.package.java.product
+
+!ENTRY org.eclipse.cdt.core 1 0 2021-03-09 17:57:47.283
+!MESSAGE Indexed 'holamundo_c' (0 sources, 0 headers) in 0,002 sec: 0 declarations; 0 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0 %)
+
+!ENTRY org.eclipse.cdt.core 1 0 2021-03-09 18:33:44.956
+!MESSAGE Indexed 'FreeRtosPosixPlantControlEjercicio1Template' (9 sources, 129 headers) in 0,568 sec: 4.590 declarations; 11.643 references; 0 unresolved inclusions; 1 syntax errors; 0 unresolved names (0 %)
+!SESSION 2021-03-16 17:30:49.456 -----------------------------------------------
+eclipse.buildId=4.14.0.I20191210-0610
+java.version=11.0.10
+java.vendor=Ubuntu
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=es_ES
+Framework arguments:  -product org.eclipse.epp.package.java.product
+Command-line arguments:  -os linux -ws gtk -arch x86_64 -product org.eclipse.epp.package.java.product
+
+!ENTRY org.eclipse.cdt.core 1 0 2021-03-16 17:41:12.064
+!MESSAGE Indexed 'FreeRtosPosixPlantControlEjercicio1Template' (9 sources, 122 headers) in 1,34 sec: 4.541 declarations; 11.312 references; 3 unresolved inclusions; 1 syntax errors; 108 unresolved names (0,68 %)
+!SESSION 2021-03-23 15:16:39.188 -----------------------------------------------
+eclipse.buildId=4.14.0.I20191210-0610
+java.version=11.0.10
+java.vendor=Ubuntu
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=es_ES
+Framework arguments:  -product org.eclipse.epp.package.java.product
+Command-line arguments:  -os linux -ws gtk -arch x86_64 -product org.eclipse.epp.package.java.product
+
+!ENTRY org.eclipse.cdt.core 1 0 2021-03-23 15:17:21.029
+!MESSAGE Indexed 'FreeRtosPosixPlantControlEjercicio2Template' (9 sources, 122 headers) in 1,56 sec: 4.553 declarations; 11.408 references; 3 unresolved inclusions; 0 syntax errors; 113 unresolved names (0,7 %)
+
+!ENTRY org.eclipse.cdt.core 1 0 2021-03-23 16:13:25.851
+!MESSAGE Indexed 'FreeRtosPosixPlantControlEjercicio3Template' (9 sources, 129 headers) in 0,597 sec: 4.616 declarations; 11.802 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0 %)

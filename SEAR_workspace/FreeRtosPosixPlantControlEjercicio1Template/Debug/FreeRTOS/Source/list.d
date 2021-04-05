@@ -1,0 +1,25 @@
+FreeRTOS/Source/list.o: ../FreeRTOS/Source/list.c \
+ /home/adidi/SEAR_workspace/FreeRtosPosixPlantControlEjercicio1Template/FreeRTOS/Source/include/FreeRTOS.h \
+ /home/adidi/SEAR_workspace/FreeRtosPosixPlantControlEjercicio1Template/FreeRTOS/Source/include/FreeRTOSConfig.h \
+ /home/adidi/SEAR_workspace/FreeRtosPosixPlantControlEjercicio1Template/FreeRTOS/Source/include/projdefs.h \
+ /home/adidi/SEAR_workspace/FreeRtosPosixPlantControlEjercicio1Template/FreeRTOS/Source/include/portable.h \
+ /home/adidi/SEAR_workspace/FreeRtosPosixPlantControlEjercicio1Template/FreeRTOS/Source/include/deprecated_definitions.h \
+ /home/adidi/SEAR_workspace/FreeRtosPosixPlantControlEjercicio1Template/FreeRTOS/Source/portable/GCC/Posix/portmacro.h \
+ /home/adidi/SEAR_workspace/FreeRtosPosixPlantControlEjercicio1Template/FreeRTOS/Source/include/mpu_wrappers.h \
+ /home/adidi/SEAR_workspace/FreeRtosPosixPlantControlEjercicio1Template/FreeRTOS/Source/include/list.h
+
+/home/adidi/SEAR_workspace/FreeRtosPosixPlantControlEjercicio1Template/FreeRTOS/Source/include/FreeRTOS.h:
+
+/home/adidi/SEAR_workspace/FreeRtosPosixPlantControlEjercicio1Template/FreeRTOS/Source/include/FreeRTOSConfig.h:
+
+/home/adidi/SEAR_workspace/FreeRtosPosixPlantControlEjercicio1Template/FreeRTOS/Source/include/projdefs.h:
+
+/home/adidi/SEAR_workspace/FreeRtosPosixPlantControlEjercicio1Template/FreeRTOS/Source/include/portable.h:
+
+/home/adidi/SEAR_workspace/FreeRtosPosixPlantControlEjercicio1Template/FreeRTOS/Source/include/deprecated_definitions.h:
+
+/home/adidi/SEAR_workspace/FreeRtosPosixPlantControlEjercicio1Template/FreeRTOS/Source/portable/GCC/Posix/portmacro.h:
+
+/home/adidi/SEAR_workspace/FreeRtosPosixPlantControlEjercicio1Template/FreeRTOS/Source/include/mpu_wrappers.h:
+
+/home/adidi/SEAR_workspace/FreeRtosPosixPlantControlEjercicio1Template/FreeRTOS/Source/include/list.h:
