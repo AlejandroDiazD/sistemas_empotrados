@@ -1,0 +1,287 @@
+Processing_Resource (
+   Type                   => Regular_Processor,
+   Name                   => arduino,
+   Max_Interrupt_Priority => 16,
+   Min_Interrupt_Priority => 1,
+   Worst_ISR_Switch       => 1.000E-07,
+   Avg_ISR_Switch         => 1.000E-07,
+   Best_ISR_Switch        => 1.000E-07,
+   System_Timer           => 
+      ( Type           => Ticker,
+        Worst_Overhead => 1.000E-05,
+        Avg_Overhead   => 1.000E-05,
+        Best_Overhead  => 1.000E-05,
+        Period         => 0.010000),
+   Speed_Factor           => 1.00);
+
+Scheduler (
+   Type            => Primary_Scheduler,
+   Name            => freertos,
+   Host            => arduino,
+   Policy          => 
+      ( Type                 => Fixed_Priority,
+        Worst_Context_Switch => 1.000E-06,
+        Avg_Context_Switch   => 1.000E-06,
+        Best_Context_Switch  => 1.000E-06,
+        Max_Priority         => 16,
+        Min_Priority         => 1));
+
+Scheduling_Server (
+   Type                       => Regular,
+   Name                       => control_plant,
+   Server_Sched_Parameters    => 
+      ( Type         => Fixed_Priority_Policy,
+        The_Priority => 5,
+        Preassigned  => YES),
+   Scheduler                  => freertos);
+
+Scheduling_Server (
+   Type                       => Regular,
+   Name                       => rs232_task,
+   Server_Sched_Parameters    => 
+      ( Type         => Fixed_Priority_Policy,
+        The_Priority => 3,
+        Preassigned  => YES),
+   Scheduler                  => freertos);
+
+Scheduling_Server (
+   Type                       => Regular,
+   Name                       => keyscan_task,
+   Server_Sched_Parameters    => 
+      ( Type         => Fixed_Priority_Policy,
+        The_Priority => 3,
+        Preassigned  => YES),
+   Scheduler                  => freertos);
+
+Scheduling_Server (
+   Type                       => Regular,
+   Name                       => led_task,
+   Server_Sched_Parameters    => 
+      ( Type         => Fixed_Priority_Policy,
+        The_Priority => 1,
+        Preassigned  => YES),
+   Scheduler                  => freertos);
+
+Scheduling_Server (
+   Type                       => Regular,
+   Name                       => http_task,
+   Server_Sched_Parameters    => 
+      ( Type         => Fixed_Priority_Policy,
+        The_Priority => 1,
+        Preassigned  => YES),
+   Scheduler                  => freertos);
+
+Shared_Resource (
+   Type     => Priority_Inheritance_Resource,
+   Name     => monitor_drv);
+
+Operation (
+   Type                       => Simple,
+   Name                       => fhttpmonitor,
+   Worst_Case_Execution_Time  => 0.005000,
+   Avg_Case_Execution_Time    => 0.005000,
+   Best_Case_Execution_Time   => 0.005000);
+
+Operation (
+   Type                       => Simple,
+   Name                       => fiamalive,
+   Worst_Case_Execution_Time  => 0.001000,
+   Avg_Case_Execution_Time    => 0.001000,
+   Best_Case_Execution_Time   => 0.001000);
+
+Operation (
+   Type                       => Simple,
+   Name                       => ftaskisalive,
+   Worst_Case_Execution_Time  => 0.003000,
+   Avg_Case_Execution_Time    => 0.003000,
+   Best_Case_Execution_Time   => 0.003000);
+
+Operation (
+   Type                       => Simple,
+   Name                       => fcontrolalg,
+   Worst_Case_Execution_Time  => 0.004000,
+   Avg_Case_Execution_Time    => 0.004000,
+   Best_Case_Execution_Time   => 0.004000);
+
+Operation (
+   Type                       => Simple,
+   Name                       => fapplycontrol,
+   Worst_Case_Execution_Time  => 1.000E-04,
+   Avg_Case_Execution_Time    => 1.000E-04,
+   Best_Case_Execution_Time   => 1.000E-04);
+
+Operation (
+   Type                       => Simple,
+   Name                       => fshowkeybchar,
+   Worst_Case_Execution_Time  => 0.001000,
+   Avg_Case_Execution_Time    => 0.001000,
+   Best_Case_Execution_Time   => 0.001000,
+   Shared_Resources_To_Lock   => 
+      ( monitor_drv),
+   Shared_Resources_To_Unlock => 
+      ( monitor_drv));
+
+Operation (
+   Type                       => Simple,
+   Name                       => fshows232char,
+   Worst_Case_Execution_Time  => 0.001000,
+   Avg_Case_Execution_Time    => 0.001000,
+   Best_Case_Execution_Time   => 0.001000,
+   Shared_Resources_To_Lock   => 
+      ( monitor_drv),
+   Shared_Resources_To_Unlock => 
+      ( monitor_drv));
+
+Operation (
+   Type                       => Simple,
+   Name                       => fscanrs232,
+   Worst_Case_Execution_Time  => 2.000E-04,
+   Avg_Case_Execution_Time    => 2.000E-04,
+   Best_Case_Execution_Time   => 2.000E-04);
+
+Operation (
+   Type                       => Simple,
+   Name                       => fscankeyb,
+   Worst_Case_Execution_Time  => 2.000E-04,
+   Avg_Case_Execution_Time    => 2.000E-04,
+   Best_Case_Execution_Time   => 2.000E-04);
+
+Operation (
+   Type                     => Composite,
+   Name                     => frs232handler,
+   Composite_Operation_List => 
+      ( fscanrs232,
+        fshows232char));
+
+Operation (
+   Type                     => Composite,
+   Name                     => fhandlekeby,
+   Composite_Operation_List => 
+      ( fscankeyb,
+        fshowkeybchar));
+
+Transaction (
+   Type            => regular,
+   Name            => trans_http_monitor,
+   External_Events => 
+      ( ( Type       => Periodic,
+          Name       => ev_httpmonitor,
+          Period     => 1.000,
+          Max_Jitter => 0.000,
+          Phase      => 0.000)),
+   Internal_Events => 
+      ( ( Type => Regular,
+          Name => ev_send_iamalive),
+        ( Type => Regular,
+          Name => dl_http_monitor,
+          Timing_Requirements => 
+            ( Type             => Hard_Global_Deadline,
+              Deadline         => 1.000,
+              Referenced_Event => ev_httpmonitor)),
+        ( Type => Regular,
+          Name => end_ev_httpmonitor)),
+   Event_Handlers  => 
+      ( (Type               => Activity,
+         Input_Event        => ev_httpmonitor,
+         Output_Event       => ev_send_iamalive,
+         Activity_Operation => fhttpmonitor,
+         Activity_Server    => http_task),
+        (Type               => Activity,
+         Input_Event        => ev_send_iamalive,
+         Output_Event       => dl_http_monitor,
+         Activity_Operation => fiamalive,
+         Activity_Server    => http_task),
+        (Type               => Activity,
+         Input_Event        => dl_http_monitor,
+         Output_Event       => end_ev_httpmonitor,
+         Activity_Operation => ftaskisalive,
+         Activity_Server    => led_task)));
+
+Transaction (
+   Type            => regular,
+   Name            => trans_plant_control,
+   External_Events => 
+      ( ( Type       => Periodic,
+          Name       => ev_ctrlplant,
+          Period     => 0.010000,
+          Max_Jitter => 0.000,
+          Phase      => 0.000)),
+   Internal_Events => 
+      ( ( Type => Regular,
+          Name => dl_ctrl_alg,
+          Timing_Requirements => 
+            ( Type             => Hard_Global_Deadline,
+              Deadline         => 0.005000,
+              Referenced_Event => ev_ctrlplant)),
+        ( Type => Regular,
+          Name => dl_apply_ctrl,
+          Timing_Requirements => 
+            ( Type             => Hard_Global_Deadline,
+              Deadline         => 0.010000,
+              Referenced_Event => ev_ctrlplant)),
+        ( Type => Regular,
+          Name => ev_ctrl_timeout)),
+   Event_Handlers  => 
+      ( (Type               => Activity,
+         Input_Event        => ev_ctrlplant,
+         Output_Event       => dl_ctrl_alg,
+         Activity_Operation => fcontrolalg,
+         Activity_Server    => control_plant),
+        (Type               => Activity,
+         Input_Event        => ev_ctrl_timeout,
+         Output_Event       => dl_apply_ctrl,
+         Activity_Operation => fapplycontrol,
+         Activity_Server    => control_plant),
+        (Type               => Offset,
+         Input_Event        => dl_ctrl_alg,
+         Output_Event       => ev_ctrl_timeout,
+         Delay_Max_Interval => 0.005000,
+         Delay_Min_Interval => 0.005000,
+         Referenced_Event   => ev_ctrlplant)));
+
+Transaction (
+   Type            => regular,
+   Name            => trans_scan_rs232,
+   External_Events => 
+      ( ( Type       => Periodic,
+          Name       => ev_scan_rs232,
+          Period     => 0.015000,
+          Max_Jitter => 0.000,
+          Phase      => 0.000)),
+   Internal_Events => 
+      ( ( Type => Regular,
+          Name => dl_scan_rs232,
+          Timing_Requirements => 
+            ( Type             => Hard_Global_Deadline,
+              Deadline         => 0.015000,
+              Referenced_Event => ev_scan_rs232))),
+   Event_Handlers  => 
+      ( (Type               => Activity,
+         Input_Event        => ev_scan_rs232,
+         Output_Event       => dl_scan_rs232,
+         Activity_Operation => frs232handler,
+         Activity_Server    => rs232_task)));
+
+Transaction (
+   Type            => regular,
+   Name            => trans_scan_keyb,
+   External_Events => 
+      ( ( Type       => Periodic,
+          Name       => ev_scan_keyb,
+          Period     => 0.015000,
+          Max_Jitter => 0.000,
+          Phase      => 0.000)),
+   Internal_Events => 
+      ( ( Type => Regular,
+          Name => dl_ev_keyb,
+          Timing_Requirements => 
+            ( Type             => Hard_Global_Deadline,
+              Deadline         => 0.015000,
+              Referenced_Event => ev_scan_keyb))),
+   Event_Handlers  => 
+      ( (Type               => Activity,
+         Input_Event        => ev_scan_keyb,
+         Output_Event       => dl_ev_keyb,
+         Activity_Operation => fhandlekeby,
+         Activity_Server    => keyscan_task)));
+

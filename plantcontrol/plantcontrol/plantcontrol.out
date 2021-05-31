@@ -1,0 +1,105 @@
+Real_Time_Situation (
+   Generation_Tool    => "MAST Schedulability Analysis, version 1.5.1.0",
+   Generation_Profile => "/usr/local/mast/mast_analysis default /home/opolo70/Desktop/plantcontrol/plantcontrol /home/opolo70/Desktop/plantcontrol/plantcontrol.out",
+   Generation_Date    => 2021-05-25T10:05:02);
+
+Transaction (
+   Name     => trans_http_monitor,
+   Results  => 
+       ((Type                          => Timing_Result,
+         Event_Name                    => dl_http_monitor,
+         Num_Of_Suspensions            => 0,
+         Worst_Blocking_Time           => 0.000,
+         Worst_Global_Response_Times   => 
+            ((Referenced_Event => ev_httpmonitor,
+              Time_Value       => 0.026154)),
+         Best_Global_Response_Times    => 
+            ((Referenced_Event => ev_httpmonitor,
+              Time_Value       => 0.006002)),
+         Jitters                       => 
+            ((Referenced_Event => ev_httpmonitor,
+              Time_Value       => 0.020152))),
+        (Type                          => Timing_Result,
+         Event_Name                    => end_ev_httpmonitor,
+         Num_Of_Suspensions            => 0,
+         Worst_Blocking_Time           => 0.000,
+         Worst_Global_Response_Times   => 
+            ((Referenced_Event => ev_httpmonitor,
+              Time_Value       => 0.035674)),
+         Best_Global_Response_Times    => 
+            ((Referenced_Event => ev_httpmonitor,
+              Time_Value       => 0.009004)),
+         Jitters                       => 
+            ((Referenced_Event => ev_httpmonitor,
+              Time_Value       => 0.026670)))));
+
+Transaction (
+   Name     => trans_plant_control,
+   Results  => 
+       ((Type                          => Timing_Result,
+         Event_Name                    => dl_ctrl_alg,
+         Num_Of_Suspensions            => 0,
+         Worst_Blocking_Time           => 0.000,
+         Worst_Global_Response_Times   => 
+            ((Referenced_Event => ev_ctrlplant,
+              Time_Value       => 0.004012)),
+         Best_Global_Response_Times    => 
+            ((Referenced_Event => ev_ctrlplant,
+              Time_Value       => 0.004002)),
+         Jitters                       => 
+            ((Referenced_Event => ev_ctrlplant,
+              Time_Value       => 1.000E-05))),
+        (Type                          => Timing_Result,
+         Event_Name                    => dl_apply_ctrl,
+         Num_Of_Suspensions            => 0,
+         Worst_Blocking_Time           => 0.000,
+         Worst_Global_Response_Times   => 
+            ((Referenced_Event => ev_ctrlplant,
+              Time_Value       => 0.005112)),
+         Best_Global_Response_Times    => 
+            ((Referenced_Event => ev_ctrlplant,
+              Time_Value       => 0.005102)),
+         Jitters                       => 
+            ((Referenced_Event => ev_ctrlplant,
+              Time_Value       => 1.000E-05)))));
+
+Transaction (
+   Name     => trans_scan_rs232,
+   Results  => 
+       ((Type                          => Timing_Result,
+         Event_Name                    => dl_scan_rs232,
+         Num_Of_Suspensions            => 0,
+         Worst_Blocking_Time           => 0.000,
+         Worst_Global_Response_Times   => 
+            ((Referenced_Event => ev_scan_rs232,
+              Time_Value       => 0.006518)),
+         Best_Global_Response_Times    => 
+            ((Referenced_Event => ev_scan_rs232,
+              Time_Value       => 0.001202)),
+         Jitters                       => 
+            ((Referenced_Event => ev_scan_rs232,
+              Time_Value       => 0.005316)))));
+
+Transaction (
+   Name     => trans_scan_keyb,
+   Results  => 
+       ((Type                          => Timing_Result,
+         Event_Name                    => dl_ev_keyb,
+         Num_Of_Suspensions            => 0,
+         Worst_Blocking_Time           => 0.000,
+         Worst_Global_Response_Times   => 
+            ((Referenced_Event => ev_scan_keyb,
+              Time_Value       => 0.006518)),
+         Best_Global_Response_Times    => 
+            ((Referenced_Event => ev_scan_keyb,
+              Time_Value       => 0.001202)),
+         Jitters                       => 
+            ((Referenced_Event => ev_scan_keyb,
+              Time_Value       => 0.005316)))));
+
+Processing_Resource (
+   Name     => arduino,
+   Results  => 
+       ((Type   => Utilization,
+         Total  => 58.07%)));
+
